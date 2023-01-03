@@ -70,7 +70,8 @@ view model =
 -- * `output` a way that the parent can communicate with the component
 -- Interesting... there's no Msg, it is internal... This is the public interface of a component.
 --
--- Note that there is nothing about subcomponents...
+-- Note that there is nothing about subcomponents... internal state, or internal messages
+-- Only types that inform about communication between the component and the parent and the Effect monad type
 component :: forall query output m . H.Component query Input output m
 component =
   H.mkComponent
