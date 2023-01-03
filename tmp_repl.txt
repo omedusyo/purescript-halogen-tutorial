@@ -9,6 +9,8 @@ spago build --watch
 // is this like a compiling + watch with nice interface?
 pscid
 
+:k (placeholder:: String)
+
 
 add this to your package.json to build stuff
     "build": "webpack ./main.js",
