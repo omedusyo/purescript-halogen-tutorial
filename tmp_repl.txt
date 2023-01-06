@@ -1,3 +1,8 @@
+Book
+  https://purescript-halogen.github.io/purescript-halogen/
+
+API Reference
+  https://pursuit.purescript.org/packages/purescript-halogen/6.1.2
 
 // To start parcel. It will watch the changes in compiled purescript code.
 npm run dev

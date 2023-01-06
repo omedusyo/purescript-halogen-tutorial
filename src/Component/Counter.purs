@@ -55,6 +55,7 @@ update =
 -------------VIEWS-----------------
 
 -- view :: forall w i . Model -> H.HTML w i
+-- TODO: Why is there `m : Type -> Type`? Can this be `Effect`?
 view :: forall m . Model -> H.ComponentHTML Msg () m
 view model =
   H.div []

@@ -39,6 +39,7 @@ update =
         H.modify_ \model -> model { number = Just newX }
 
 -------------VIEWS-----------------
+-- TODO: What is the meaning of `m : Type -> Type`?
 view :: forall (m :: Type -> Type) . Model -> H.ComponentHTML Msg () m
 view model =
   H.div []

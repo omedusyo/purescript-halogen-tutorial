@@ -15,6 +15,7 @@ import Halogen.VDom.Driver (runUI)
 
 import Component.Counter as Counter
 import Component.RNG as RNG
+import Component.GithubLookup as GithubLookup
 
 main :: Effect Unit
 main = HA.runHalogenAff do
@@ -23,6 +24,7 @@ main = HA.runHalogenAff do
   _ <- runUI Counter.component unit body
   _ <- runUI Counter.component unit body
   _ <- runUI RNG.component unit body
+  _ <- runUI GithubLookup.component unit body
   pure unit
 
 -------------VIEWS-----------------
