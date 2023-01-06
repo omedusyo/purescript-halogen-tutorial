@@ -21,20 +21,33 @@ import Web.Event.Event as Event
 import Affjax as Affjax
 import Affjax.ResponseFormat as AffjaxResponseFormat
 import Affjax.Web as AffjaxWeb
+
+
+data EventuallyPossibly e a = 
+    NotLoaded
+  | Loading
+  | Error e
+  | Ok a
+
+eitherToEventuallyPossibly :: forall e a . Either e a -> EventuallyPossibly e a
+eitherToEventuallyPossibly =
+  case _ of
+    Left err -> Error err
+    Right x -> Ok x
+
 -------------Input-----------------
 type Input = Unit
 
 -------------Model-----------------
 type Model =
   { username :: String
-  , result :: Maybe (Either Affjax.Error String)
+  , result :: EventuallyPossibly Affjax.Error String
   }
-
 
 initModel :: Input -> Model
 initModel _ =
   { username: "start-username"
-  , result: Nothing
+  , result: NotLoaded
   }
 
 -------------Msg-----------------
@@ -56,15 +69,10 @@ update =
     SubmitButtonClicked event -> do
       H.liftEffect $ Event.preventDefault event
       username <- H.gets _.username
+      H.modify_ (\model -> model { result = Loading })
+      -- This is just amazing. We don't need to split this into two steps, yet it is async anyway.
       httpResponse <- H.liftAff $ Affjax.get AffjaxWeb.driver AffjaxResponseFormat.string ("https://api.github.com/users/" <> username)
-      H.modify_ (\model -> model { result = Just (httpResponse # map _.body)  })
-      -- case httpResponse of
-      --   Left error ->
-      --     H.modify_ (\model -> model { result = Nothing })
-
-      --   Right response ->
-      --     -- somethning.body
-      --     H.modify_ (\model -> model { result = Just response.body } )
+      H.modify_ (\model -> model { result = (httpResponse # map _.body # eitherToEventuallyPossibly)  })
 
 -------------VIEWS-----------------
 view :: forall m . Model -> H.ComponentHTML Msg () m 
@@ -83,14 +91,17 @@ view model =
         [ HP.type_ HP.ButtonSubmit ]
         [ H.text "Fetch info"]
     , case model.result of
-        Just result ->
-          case result of
-            Left err ->
-              H.h1 [] [ H.text "error" ]
-            Right user ->
-              H.h1 [] [ H.text user ]
-        Nothing ->
+        NotLoaded ->
           H.text ""
+
+        Loading ->
+          H.h1 [] [ H.text "Loading..." ] 
+
+        Error err ->
+          H.h1 [] [ H.text "error" ]
+
+        Ok user ->
+          H.h1 [] [ H.text user ]
     ]
 
 -------------Component-----------------
